@@ -117,7 +117,7 @@ class RegisterFileSynthesizable(
 {
   // --------------------------------------------------------------
 
-  val regfile = Mem(num_registers, UInt(register_width.W))
+  val regfile = SyncReadMem(num_registers, UInt(register_width.W))
 
   // --------------------------------------------------------------
   // Read ports.
@@ -131,8 +131,8 @@ class RegisterFileSynthesizable(
   {
     read_data(i) :=
       Mux(read_addrs(i) === 0.U,
-        0.U,
-        regfile(read_addrs(i)))
+          0.U,
+          regfile.read(io.read_ports(i).addr, true.B))
   }
 
   // --------------------------------------------------------------
@@ -175,7 +175,7 @@ class RegisterFileSynthesizable(
   {
     when (wport.valid && (wport.bits.addr =/= 0.U))
     {
-      regfile(wport.bits.addr) := wport.bits.data
+       regfile.write(wport.bits.addr, wport.bits.data)
     }
   }
 
