@@ -561,6 +561,7 @@ class MemExeUnit(implicit p: Parameters) extends ExecutionUnit(num_rf_read_ports
    io.dmem.req.bits.data  := io.lsu_io.memreq_wdata
    io.dmem.req.bits.uop   := io.lsu_io.memreq_uop
    io.dmem.req.bits.kill  := io.lsu_io.memreq_kill // load kill request sent to memory
+   io.dmem.req.bits.load_retry := io.lsu_io.load_retry
 
    // I should be timing forwarding to coincide with dmem resps, so I'm not clobbering
    //anything....

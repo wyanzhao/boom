@@ -126,6 +126,7 @@ class LoadStoreUnitIO(pl_width: Int)(implicit p: Parameters) extends BoomBundle(
                                        // wrapper, we can prevent spurious
                                        // retries as well as some load ordering
                                        // failures.
+   val load_retry         = Bool(OUTPUT)
 
    val ptw = new rocket.TLBPTWIO
    val sfence = new rocket.SFenceReq
@@ -560,6 +561,7 @@ class LoadStoreUnit(pl_width: Int)(implicit p: Parameters, edge: freechips.rocke
       io.memreq_val   := Bool(true)
       io.memreq_addr  := exe_ld_addr
       io.memreq_uop   := exe_ld_uop
+      io.load_retry   := will_fire_load_wakeup
 
       laq_executed(exe_ld_uop.ldq_idx) := Bool(true)
       laq_failure (exe_ld_uop.ldq_idx) := (will_fire_load_incoming && (ma_ld || pf_ld)) ||

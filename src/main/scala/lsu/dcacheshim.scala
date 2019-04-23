@@ -122,6 +122,7 @@ class DCacheReq(implicit p: Parameters) extends BoomBundle()(p)
    val uop     = new MicroOp()
    val data    = Bits(width = coreDataBits)
    val kill    = Bool()    // e.g., LSU detects load misspeculation
+   val load_retry = Bool() // used to indicate that req is a retry req.
 }
 
 class NackInfo(implicit p: Parameters) extends BoomBundle()(p)
@@ -291,6 +292,9 @@ class DCacheShim(implicit p: Parameters) extends BoomModule()(p)
    io.dmem.req.bits.phys  := Bool(true) // we always use physical addresses (TLB is in LSU).
    io.dmem.invalidate_lr  := io.core.invalidate_lr
 
+   // if req is both a load req and a branch prediction req, it needs dc_bypass
+   io.dmem.req.bits.dc_bypass := io.core.req.bits.uop.is_load && (io.core.req.bits.uop.br_mask > 0.U)
+   io.dmem.req.bits.load_retry := io.core.req.bits.load_retry
    //------------------------------------------------------------
    // handle responses and nacks
 
