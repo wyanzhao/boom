@@ -126,7 +126,7 @@ class WithSpectreDevBooms extends Config((site, here, up) => {
       core = r.core.copy(
          fetchWidth = 2,
          decodeWidth = 1,
-         numRobEntries = 48,
+         numRobEntries = 20,
          issueParams = Seq(
             IssueParams(issueWidth=1, numEntries=4, iqType=IQT_MEM.litValue),
             IssueParams(issueWidth=1, numEntries=4, iqType=IQT_INT.litValue),
@@ -141,7 +141,7 @@ class WithSpectreDevBooms extends Config((site, here, up) => {
          gshare = Some(GShareParameters(enabled=true, history_length=23, num_sets=4096)),
          nPerfCounters = 6,
          fpu = Some(freechips.rocketchip.tile.FPUParams(sfmaLatency=4, dfmaLatency=4, divSqrt=true))),
-      dcache = Some(DCacheParams(rowBits = site(SystemBusKey).beatBits, nSets=64, nWays=4, nMSHRs=2, nTLBEntries=8)),
+      dcache = Some(DCacheParams(rowBits = site(SystemBusKey).beatBits, nSets=64, nWays=4, nMSHRs=0, nTLBEntries=8)),
       icache = Some(ICacheParams(rowBits = site(SystemBusKey).beatBits, nSets=64, nWays=4, fetchBytes=2*4))
       )}
    case SystemBusKey => up(SystemBusKey, site).copy(beatBytes = 8)
