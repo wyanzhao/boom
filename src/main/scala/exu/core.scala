@@ -584,8 +584,8 @@ class BoomCore(implicit p: Parameters, edge: freechips.rocketchip.tilelink.TLEdg
       uop.csr_addr := DontCare
       uop.br_prediction := DontCare
       uop.debug_wdata := DontCare
-      if (!DEBUG_PRINTF && !COMMIT_LOG_PRINTF) uop.pc := DontCare
-      if (!DEBUG_PRINTF && !COMMIT_LOG_PRINTF) uop.inst := DontCare
+      if (!DEBUG_PRINTF && !COMMIT_LOG_PRINTF && !COMMIT_TRACING) uop.pc := DontCare
+      if (!DEBUG_PRINTF && !COMMIT_LOG_PRINTF && !COMMIT_TRACING) uop.inst := DontCare
       if (!O3PIPEVIEW_PRINTF) uop.debug_events.fetch_seq := DontCare
    }
 
@@ -1381,6 +1381,34 @@ class BoomCore(implicit p: Parameters, edge: freechips.rocketchip.tilelink.TLEdg
             {
                printf("%d 0x%x (0x%x)\n",
                   priv, Sext(rob.io.commit.uops(w).pc(vaddrBits,0), xLen), rob.io.commit.uops(w).inst)
+            }
+         }
+      }
+   }
+
+   if (COMMIT_TRACING)
+   {
+      var new_commit_cnt = UInt(0)
+      for (w <- 0 until COMMIT_WIDTH)
+      {
+         val priv = csr.io.status.prv
+
+         when (rob.io.commit.valids(w))
+         {
+            when (rob.io.commit.uops(w).dst_rtype === RT_FIX && rob.io.commit.uops(w).ldst =/= UInt(0))
+            {
+               printf("i %d %d %x %x\n",
+                   priv, debug_tsc_reg, Sext(rob.io.commit.uops(w).pc(vaddrBits,0), xLen), rob.io.commit.uops(w).inst)
+            }
+            .elsewhen (rob.io.commit.uops(w).dst_rtype === RT_FLT)
+            {
+               printf("f %d %d %x %x\n",
+                   priv, debug_tsc_reg, Sext(rob.io.commit.uops(w).pc(vaddrBits,0), xLen), rob.io.commit.uops(w).inst)
+            }
+            .otherwise
+            {
+               printf("o %d %d %x %x\n",
+                   priv, debug_tsc_reg, Sext(rob.io.commit.uops(w).pc(vaddrBits,0), xLen), rob.io.commit.uops(w).inst)
             }
          }
       }
