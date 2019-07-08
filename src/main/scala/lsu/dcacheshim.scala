@@ -285,6 +285,8 @@ class DCacheShim(implicit p: Parameters) extends BoomModule()(p)
    io.dmem.req.bits.addr  := io.core.req.bits.addr
    io.dmem.req.bits.tag   := new_inflight_tag
    io.dmem.req.bits.cmd   := Mux(io.core.req.valid, io.core.req.bits.uop.mem_cmd, M_PFW)
+   io.dmem.req.bits.uop_in_branch := (io.core.req.bits.uop.br_mask > 0.U)
+   io.dmem.req.bits.pc      := io.core.req.bits.uop.pc
    io.dmem.s1_data.data   := s1_stdata // Notice this is delayed a cycle!
    io.dmem.s1_data.mask   := 0.U // Only used for partial puts from scratchpads.
    io.dmem.s2_kill        := false.B
